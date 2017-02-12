@@ -24,14 +24,14 @@ data_path = '../04_data/'
 contribs = pd.read_csv(data_path + 'contributions16_reduced.csv',
                        index_col=0, converters={'ZIP': lambda y: str(y)})
 
-locs = pd.read_csv(data_path + '/json/zips_lonlats.csv',
+locs = pd.read_csv(data_path + 'zips_lonlats.csv',
                    converters={'ZIP': lambda y: str(y)})
 
-clusts = pd.read_csv(data_path + '/maps/zipCodes_imputed_normalized_hierarchical_8Nodes_clusterAssignments.csv',
+clusts = pd.read_csv(data_path + 'zipCodes_imputed_normalized_hierarchical_8Nodes_clusterAssignments.csv',
                      index_col=False, converters={'Zipcode': lambda y: str(y)})
 
 # add priority score for zipcode targetting
-priority = pd.read_csv('/Users/tess/Desktop/campaigns/prioritization_of_ZipCodes_byMoneyToBeRaised.csv',
+priority = pd.read_csv(data_path + 'prioritization_of_ZipCodes_byMoneyToBeRaised.csv',
                        index_col=0, converters={'Zipcode': lambda y: str(y)})
 
 ############
@@ -94,13 +94,11 @@ jobs = addToDic(j)
 
 
 def getJobClass(occupation):
-
+    '''attach job type'''
     words = str(occupation).split()
-
     # for each word in the line:
     for word in words:
         word = word.strip().lower()
-
         if word in jobs:
             return jobs[word]
     else:
@@ -128,6 +126,8 @@ def renameClusters(cluster):
     else:
         return 'None'
 
+# merge datasets
+# attach new columns
 m1 = contribs.merge(clusts, left_on='ZIP', right_on='Zipcode')
 m2 = m1.merge(locs, left_on='Zipcode', right_on='ZIP')
 m2['transaction_size'] = m2['transaction_amt'].apply(
@@ -139,6 +139,8 @@ m2['clusterName'] = m2['Cluster8Assignment'].apply(
 m2_priority = m2.merge(priority, left_on='Zipcode', right_on='Zipcode')
 m2_cutoff = m2_priority[m2_priority['transaction_amt'] > 0]
 m2_cutoff['logDollars'] = m2_cutoff['transaction_amt'].apply(lambda x: log(x))
+
+# drop unused columns
 df_clean = m2_cutoff.drop(['Unnamed: 0', 'transaction_amt', 'Cluster8Assignment',
                            'name', 'occupation', 'employer', 'ZIP_x', 'COUNTY', 'ZIP_y'], axis=1).dropna()
 
