@@ -21,12 +21,15 @@ matplotlib.style.use('ggplot')
 # load datasets for merging
 data_path = '../04_data/'
 
+# return only contributions from individuals (not corporations)
 contribs = pd.read_csv(data_path + 'contributions16_reduced.csv',
                        index_col=0, converters={'ZIP': lambda y: str(y)})
 
+# map between zipcode and lon/lat (to add data to map)
 locs = pd.read_csv(data_path + 'zips_lonlats.csv',
                    converters={'ZIP': lambda y: str(y)})
 
+# add cluster assignments from hierarchical geodemographic clustering
 clusts = pd.read_csv(data_path + 'zipCodes_imputed_normalized_hierarchical_8Nodes_clusterAssignments.csv',
                      index_col=False, converters={'Zipcode': lambda y: str(y)})
 

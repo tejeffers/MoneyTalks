@@ -50,4 +50,4 @@ folium.GeoJson(
     }
 ).add_to(m)
 
-m.save('/Users/tess/Desktop/campaigns/zipCodes_map_8Nodes_clusterAssignments.html')
+m.save('../04_data/zipCodes_map_8Nodes_clusterAssignments.html')
